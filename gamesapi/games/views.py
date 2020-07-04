@@ -6,8 +6,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
-from games.models import Game, GameCategory
-from games.serializers import GameSerializer, GameCategorySerializer
+from games.models import Game, GameCategory, Player, PlayerScore
+from games.serializers import GameSerializer, GameCategorySerializer, PlayerSerializer, PlayerScoreSerializer
 
 
 ## using JSONResponse HttpResponse Class
@@ -122,3 +122,25 @@ class GameDetail(generics.RetrieveUpdateDestroyAPIView):
     name = 'game-detail'
 
 
+class PlayerList(generics.ListCreateAPIView):
+    queryset = Player.objects.all()
+    serializer_class = PlayerSerializer
+    name = 'player-list'
+
+
+class PlayerDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Player.objects.all()
+    serializer_class = PlayerSerializer
+    name = 'player-detail'
+
+
+class PlayerScoreList(generics.ListCreateAPIView):
+    queryset = PlayerScore.objects.all()
+    serializer_class = PlayerScoreSerializer
+    name = 'playerscore-list'
+
+
+class PlayerScoreDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = PlayerScore.objects.all()
+    serializer_class = PlayerScoreSerializer
+    name = 'playerscore-list'
