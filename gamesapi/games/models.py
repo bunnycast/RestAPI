@@ -12,6 +12,10 @@ class GameCategory(models.Model):
 
 
 class Game(models.Model):
+    owner = models.ForeignKey(
+        'auth.User',
+        related_name='games',
+        on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=200, unique=True)
     release_date = models.DateTimeField(auto_now_add=True)
@@ -22,8 +26,8 @@ class Game(models.Model):
     )  # using ForeignKey
     played = models.BooleanField(default=False)
 
-    # class Meta:
-    #     ordering = ('name',)
+    class Meta:
+        ordering = ('name',)
 
     def __str__(self):      # 각 모델 class의 제목을 무엇으로 할지 반환
         return self.name
