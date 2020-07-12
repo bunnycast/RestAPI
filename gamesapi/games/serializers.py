@@ -34,12 +34,14 @@ class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = (
+            'id',
             'url',
             'game_category',
             'name',
             'release_date',
             'played',
         )
+
 
 
 class GameCategorySerializer(serializers.ModelSerializer):
