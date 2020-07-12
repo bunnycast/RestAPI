@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 from games.models import Game, GameCategory, Player, PlayerScore
 from games.serializers import GameSerializer, GameCategorySerializer, PlayerSerializer, PlayerScoreSerializer
@@ -107,12 +108,12 @@ class GameCategoryList(generics.ListCreateAPIView):
 class GameCategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = GameCategory.objects.all()
     serializer_class = GameCategorySerializer
-    name = 'gamecategory-datail'
+    name = 'gamecategory-detail'
 
 
 class GameList(generics.ListCreateAPIView):
     queryset = Game.objects.all()
-    serializer_class = GameSerializer()
+    serializer_class = GameSerializer
     name = 'game-list'
 
 
@@ -143,4 +144,16 @@ class PlayerScoreList(generics.ListCreateAPIView):
 class PlayerScoreDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = PlayerScore.objects.all()
     serializer_class = PlayerScoreSerializer
-    name = 'playerscore-list'
+    name = 'playerscore-detail'
+
+
+class ApiRoot(generics.GenericAPIView):     # api 경로를 보는 하이퍼링크 제공 P.144
+    name = 'api-root'
+
+    def get(self, request, *args, **kwargs):
+        return Response({
+            'players': reverse(PlayerList.name, request=request),
+            'game-categories': reverse(GameCategoryList.name, request=request),
+            'games': reverse(GameList.name, request=request),
+            'scores': reverse(PlayerScoreList.name, request=request)
+        })
