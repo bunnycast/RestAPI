@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, generics
@@ -8,7 +9,8 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from games.models import Game, GameCategory, Player, PlayerScore
-from games.serializers import GameSerializer, GameCategorySerializer, PlayerSerializer, PlayerScoreSerializer
+from games.serializers import GameSerializer, GameCategorySerializer, PlayerSerializer, PlayerScoreSerializer, \
+    UserSerializer
 
 
 ## using JSONResponse HttpResponse Class
@@ -97,6 +99,17 @@ from games.serializers import GameSerializer, GameCategorySerializer, PlayerSeri
 #         Game.delete()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    name = 'user-list'
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    name = 'user-detail'
+
 
 # Using GenericView
 class GameCategoryList(generics.ListCreateAPIView):
@@ -115,6 +128,11 @@ class GameList(generics.ListCreateAPIView):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
     name = 'game-list'
+
+    def perform_create(self, serializer):
+        # 요청으로 받은 사용자로 소유자를 설정하기 위해
+        # create 메서드에게 추가적인 owner 필드를 전달
+        serializer.save(owner=self.request.user)
 
 
 class GameDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -147,7 +165,7 @@ class PlayerScoreDetail(generics.RetrieveUpdateDestroyAPIView):
     name = 'playerscore-detail'
 
 
-class ApiRoot(generics.GenericAPIView):     # api 경로를 보는 하이퍼링크 제공 P.144
+class ApiRoot(generics.GenericAPIView):  # api 경로를 보는 하이퍼링크 제공 P.144
     name = 'api-root'
 
     def get(self, request, *args, **kwargs):
@@ -155,5 +173,6 @@ class ApiRoot(generics.GenericAPIView):     # api 경로를 보는 하이퍼링�
             'players': reverse(PlayerList.name, request=request),
             'game-categories': reverse(GameCategoryList.name, request=request),
             'games': reverse(GameList.name, request=request),
-            'scores': reverse(PlayerScoreList.name, request=request)
+            'scores': reverse(PlayerScoreList.name, request=request),
+            'users': reverse(UserList.name, request=request),
         })
